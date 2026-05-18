@@ -1,8 +1,8 @@
 package com.maor.studyflow.task;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -17,18 +17,24 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> getTasks() {
+    public List<TaskResponse> getTasks() {
         return taskService.getTasks();
     }
 
-    @GetMapping("/recommended")
-    public List<TaskRecommendationResponse> getRecommendedTasks() {
-        return taskService.getRecommendedTasks();
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskResponse> getTaskById(@PathVariable Long id) {
+        TaskResponse task = taskService.getTaskById(id);
+
+        if (task == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(task);
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@Valid @RequestBody CreateTaskRequest request) {
-        Task task = taskService.createTask(request);
+    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody CreateTaskRequest request) {
+        TaskResponse task = taskService.createTask(request);
 
         if (task == null) {
             return ResponseEntity.notFound().build();
@@ -38,11 +44,11 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(
+    public ResponseEntity<TaskResponse> updateTask(
             @PathVariable Long id,
             @Valid @RequestBody CreateTaskRequest request
     ) {
-        Task task = taskService.updateTask(id, request);
+        TaskResponse task = taskService.updateTask(id, request);
 
         if (task == null) {
             return ResponseEntity.notFound().build();
@@ -51,9 +57,12 @@ public class TaskController {
         return ResponseEntity.ok(task);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
-        Task task = taskService.getTaskById(id);
+    @PutMapping("/{id}/status")
+    public ResponseEntity<TaskResponse> updateTaskStatus(
+            @PathVariable Long id,
+            @RequestParam TaskStatus status
+    ) {
+        TaskResponse task = taskService.updateTaskStatus(id, status);
 
         if (task == null) {
             return ResponseEntity.notFound().build();
@@ -71,5 +80,10 @@ public class TaskController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/recommended")
+    public List<TaskRecommendationResponse> getRecommendedTasks() {
+        return taskService.getRecommendedTasks();
     }
 }

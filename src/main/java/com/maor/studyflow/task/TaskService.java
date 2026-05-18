@@ -20,15 +20,24 @@ public class TaskService {
         this.courseRepository = courseRepository;
     }
 
-    public List<Task> getTasks() {
-        return taskRepository.findAll();
+    public List<TaskResponse> getTasks() {
+        return taskRepository.findAll()
+                .stream()
+                .map(this::mapToTaskResponse)
+                .toList();
     }
 
-    public Task getTaskById(Long id) {
-        return taskRepository.findById(id).orElse(null);
+    public TaskResponse getTaskById(Long id) {
+        Task task = taskRepository.findById(id).orElse(null);
+
+        if (task == null) {
+            return null;
+        }
+
+        return mapToTaskResponse(task);
     }
 
-    public Task createTask(CreateTaskRequest request) {
+    public TaskResponse createTask(CreateTaskRequest request) {
         Course course = courseRepository.findById(request.getCourseId()).orElse(null);
 
         if (course == null) {
@@ -44,11 +53,13 @@ public class TaskService {
         task.setStatus(request.getStatus() == null ? TaskStatus.TODO : request.getStatus());
         task.setCourse(course);
 
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+
+        return mapToTaskResponse(savedTask);
     }
 
-    public Task updateTask(Long id, CreateTaskRequest request) {
-        Task existingTask = getTaskById(id);
+    public TaskResponse updateTask(Long id, CreateTaskRequest request) {
+        Task existingTask = taskRepository.findById(id).orElse(null);
 
         if (existingTask == null) {
             return null;
@@ -68,10 +79,12 @@ public class TaskService {
         existingTask.setStatus(request.getStatus() == null ? existingTask.getStatus() : request.getStatus());
         existingTask.setCourse(course);
 
-        return taskRepository.save(existingTask);
+        Task savedTask = taskRepository.save(existingTask);
+
+        return mapToTaskResponse(savedTask);
     }
 
-    public Task updateTaskStatus(Long id, TaskStatus status) {
+    public TaskResponse updateTaskStatus(Long id, TaskStatus status) {
         Task task = taskRepository.findById(id).orElse(null);
 
         if (task == null) {
@@ -80,7 +93,18 @@ public class TaskService {
 
         task.setStatus(status);
 
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+
+        return mapToTaskResponse(savedTask);
+    }
+
+    public boolean deleteTaskById(Long id) {
+        if (!taskRepository.existsById(id)) {
+            return false;
+        }
+
+        taskRepository.deleteById(id);
+        return true;
     }
 
     public List<TaskRecommendationResponse> getRecommendedTasks() {
@@ -107,6 +131,22 @@ public class TaskService {
                 .toList();
     }
 
+    private TaskResponse mapToTaskResponse(Task task) {
+        Course course = task.getCourse();
+
+        return new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getDeadline(),
+                task.getEstimatedHours(),
+                task.getPriority(),
+                task.getStatus(),
+                course.getId(),
+                course.getName()
+        );
+    }
+
     private long calculateDaysLeft(Task task) {
         if (task.getDeadline() == null) {
             return 999;
@@ -125,14 +165,5 @@ public class TaskService {
         int courseDifficulty = task.getCourse().getDifficulty();
 
         return task.getPriority() * task.getEstimatedHours() * courseDifficulty / daysLeft;
-    }
-
-    public boolean deleteTaskById(Long id) {
-        if (!taskRepository.existsById(id)) {
-            return false;
-        }
-
-        taskRepository.deleteById(id);
-        return true;
     }
 }
