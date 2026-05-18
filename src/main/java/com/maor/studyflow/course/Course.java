@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Course {
@@ -12,8 +15,14 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Course name is required")
     private String name;
+
+    @NotBlank(message = "Semester is required")
     private String semester;
+
+    @Min(value = 1, message = "Difficulty must be at least 1")
+    @Max(value = 5, message = "Difficulty must be at most 5")
     private int difficulty;
 
     public Course() {

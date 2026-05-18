@@ -2,6 +2,7 @@ package com.maor.studyflow.course;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -32,14 +33,14 @@ public class CourseController {
     }
 
     @PostMapping
-    public Course createCourse(@RequestBody Course course) {
+    public Course createCourse(@Valid @RequestBody Course course) {
         return courseService.createCourse(course);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Course> updateCourse(
             @PathVariable Long id,
-            @RequestBody Course updatedCourse
+            @Valid @RequestBody Course updatedCourse
     ) {
         Course course = courseService.updateCourse(id, updatedCourse);
 
