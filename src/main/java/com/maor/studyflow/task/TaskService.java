@@ -20,9 +20,11 @@ public class TaskService {
         this.courseRepository = courseRepository;
     }
 
-    public List<TaskResponse> getTasks() {
+    public List<TaskResponse> getTasks(TaskStatus status, Long courseId) {
         return taskRepository.findAll()
                 .stream()
+                .filter(task -> status == null || task.getStatus() == status)
+                .filter(task -> courseId == null || task.getCourse().getId().equals(courseId))
                 .map(this::mapToTaskResponse)
                 .toList();
     }

@@ -17,8 +17,11 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponse> getTasks() {
-        return taskService.getTasks();
+    public List<TaskResponse> getTasks(
+            @RequestParam(required = false) TaskStatus status,
+            @RequestParam(required = false) Long courseId
+    ) {
+        return taskService.getTasks(status, courseId);
     }
 
     @GetMapping("/{id}")
