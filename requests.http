@@ -1,0 +1,15 @@
+### Get all courses
+GET http://localhost:8080/api/courses
+
+
+### Create new course
+POST http://localhost:8080/api/courses
+Content-Type: application/json
+
+{
+  "name": "Data Structures",
+  "semester": "Year 2 - Semester B",
+  "difficulty": 5
+}
+
+
