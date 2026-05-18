@@ -3,6 +3,8 @@ package com.maor.studyflow.dashboard;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class DashboardController {
 
@@ -15,5 +17,10 @@ public class DashboardController {
     @GetMapping("/api/dashboard/summary")
     public DashboardSummaryResponse getSummary() {
         return dashboardService.getSummary();
+    }
+
+    @GetMapping("/api/dashboard/courses")
+    public List<CourseProgressResponse> getCourseProgress() {
+        return dashboardService.getCourseProgress();
     }
 }
