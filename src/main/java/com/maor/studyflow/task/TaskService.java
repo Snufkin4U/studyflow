@@ -24,6 +24,10 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
+    public Task getTaskById(Long id) {
+        return taskRepository.findById(id).orElse(null);
+    }
+
     public Task createTask(CreateTaskRequest request) {
         Course course = courseRepository.findById(request.getCourseId()).orElse(null);
 
@@ -41,6 +45,30 @@ public class TaskService {
         task.setCourse(course);
 
         return taskRepository.save(task);
+    }
+
+    public Task updateTask(Long id, CreateTaskRequest request) {
+        Task existingTask = getTaskById(id);
+
+        if (existingTask == null) {
+            return null;
+        }
+
+        Course course = courseRepository.findById(request.getCourseId()).orElse(null);
+
+        if (course == null) {
+            return null;
+        }
+
+        existingTask.setTitle(request.getTitle());
+        existingTask.setDescription(request.getDescription());
+        existingTask.setDeadline(request.getDeadline());
+        existingTask.setEstimatedHours(request.getEstimatedHours());
+        existingTask.setPriority(request.getPriority());
+        existingTask.setStatus(request.getStatus() == null ? existingTask.getStatus() : request.getStatus());
+        existingTask.setCourse(course);
+
+        return taskRepository.save(existingTask);
     }
 
     public Task updateTaskStatus(Long id, TaskStatus status) {
@@ -97,5 +125,14 @@ public class TaskService {
         int courseDifficulty = task.getCourse().getDifficulty();
 
         return task.getPriority() * task.getEstimatedHours() * courseDifficulty / daysLeft;
+    }
+
+    public boolean deleteTaskById(Long id) {
+        if (!taskRepository.existsById(id)) {
+            return false;
+        }
+
+        taskRepository.deleteById(id);
+        return true;
     }
 }
