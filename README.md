@@ -27,6 +27,13 @@ It allows users to manage courses and study tasks, and includes a recommendation
 
 ## Main API Endpoints
 
+### Dashboard
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/dashboard/summary` | Get overall study dashboard summary |
+| GET | `/api/dashboard/courses` | Get task progress grouped by course |
+
 ### Courses
 
 | Method | Endpoint | Description |
