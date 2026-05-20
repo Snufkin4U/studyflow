@@ -20,11 +20,18 @@ public class TaskService {
         this.courseRepository = courseRepository;
     }
 
-    public List<TaskResponse> getTasks(TaskStatus status, Long courseId) {
+    public List<TaskResponse> getTasks(TaskStatus status, Long courseId, String sortBy, String direction) {
+        Comparator<Task> comparator = getTaskComparator(sortBy);
+
+        if ("desc".equalsIgnoreCase(direction)) {
+            comparator = comparator.reversed();
+        }
+
         return taskRepository.findAll()
                 .stream()
                 .filter(task -> status == null || task.getStatus() == status)
                 .filter(task -> courseId == null || task.getCourse().getId().equals(courseId))
+                .sorted(comparator)
                 .map(this::mapToTaskResponse)
                 .toList();
     }
@@ -175,6 +182,20 @@ public class TaskService {
                 course.getId(),
                 course.getName()
         );
+    }
+
+    private Comparator<Task> getTaskComparator(String sortBy) {
+        if (sortBy == null) {
+            return Comparator.comparing(Task::getDeadline);
+        }
+
+        return switch (sortBy) {
+            case "priority" -> Comparator.comparing(Task::getPriority);
+            case "estimatedHours" -> Comparator.comparing(Task::getEstimatedHours);
+            case "status" -> Comparator.comparing(Task::getStatus);
+            case "deadline" -> Comparator.comparing(Task::getDeadline);
+            default -> Comparator.comparing(Task::getDeadline);
+        };
     }
 
     private long calculateDaysLeft(Task task) {
