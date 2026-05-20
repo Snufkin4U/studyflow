@@ -8,4 +8,5 @@ INSERT INTO tasks (id, title, description, deadline, estimated_hours, priority, 
 VALUES
     (1, 'Solve DP exercises', 'Practice dynamic programming before exam', '2026-06-01', 8.0, 5, 'TODO', 1),
     (2, 'Read OS summary', 'Review processes and threads', '2026-06-10', 3.0, 3, 'TODO', 2),
-    (3, 'Practice networking questions', 'Review TCP, UDP, ARP, and DHCP', '2026-06-15', 4.0, 4, 'IN_PROGRESS', 3);
+    (3, 'Practice networking questions', 'Review TCP, UDP, ARP, and DHCP', '2026-06-15', 4.0, 4, 'IN_PROGRESS', 3),
+    (4, 'Submit old assignment', 'This task is overdue for testing', '2026-05-01', 2.0, 4, 'TODO', 1);

@@ -148,6 +148,19 @@ public class TaskService {
                 .toList();
     }
 
+    public List<TaskResponse> getOverdueTasks() {
+        LocalDate today = LocalDate.now();
+
+        return taskRepository.findAll()
+                .stream()
+                .filter(task -> task.getStatus() != TaskStatus.DONE)
+                .filter(task -> task.getDeadline() != null)
+                .filter(task -> task.getDeadline().isBefore(today))
+                .sorted(Comparator.comparing(Task::getDeadline))
+                .map(this::mapToTaskResponse)
+                .toList();
+    }
+
     private TaskResponse mapToTaskResponse(Task task) {
         Course course = task.getCourse();
 

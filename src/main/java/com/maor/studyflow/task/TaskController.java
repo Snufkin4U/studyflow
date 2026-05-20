@@ -31,6 +31,11 @@ public class TaskController {
         return taskService.getDueSoonTasks(days);
     }
 
+    @GetMapping("/overdue")
+    public List<TaskResponse> getOverdueTasks() {
+        return taskService.getOverdueTasks();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<TaskResponse> getTaskById(@PathVariable Long id) {
         TaskResponse task = taskService.getTaskById(id);
