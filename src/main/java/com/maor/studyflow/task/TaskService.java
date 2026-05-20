@@ -133,6 +133,21 @@ public class TaskService {
                 .toList();
     }
 
+    public List<TaskResponse> getDueSoonTasks(int days) {
+        LocalDate today = LocalDate.now();
+        LocalDate endDate = today.plusDays(days);
+
+        return taskRepository.findAll()
+                .stream()
+                .filter(task -> task.getStatus() != TaskStatus.DONE)
+                .filter(task -> task.getDeadline() != null)
+                .filter(task -> !task.getDeadline().isBefore(today))
+                .filter(task -> !task.getDeadline().isAfter(endDate))
+                .sorted(Comparator.comparing(Task::getDeadline))
+                .map(this::mapToTaskResponse)
+                .toList();
+    }
+
     private TaskResponse mapToTaskResponse(Task task) {
         Course course = task.getCourse();
 

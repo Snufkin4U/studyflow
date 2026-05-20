@@ -24,6 +24,13 @@ public class TaskController {
         return taskService.getTasks(status, courseId);
     }
 
+    @GetMapping("/due-soon")
+    public List<TaskResponse> getDueSoonTasks(
+            @RequestParam(defaultValue = "7") int days
+    ) {
+        return taskService.getDueSoonTasks(days);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<TaskResponse> getTaskById(@PathVariable Long id) {
         TaskResponse task = taskService.getTaskById(id);
@@ -89,4 +96,6 @@ public class TaskController {
     public List<TaskRecommendationResponse> getRecommendedTasks() {
         return taskService.getRecommendedTasks();
     }
+
+
 }
