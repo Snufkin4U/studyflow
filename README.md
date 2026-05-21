@@ -1,5 +1,7 @@
 # StudyFlow
 
+![Java CI](https://github.com/Snufkin4U/studyflow/actions/workflows/ci.yml/badge.svg)
+
 StudyFlow is a smart academic planner backend for students.
 
 It allows users to manage courses and study tasks, and includes a recommendation system that ranks tasks by urgency.
