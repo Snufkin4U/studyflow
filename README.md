@@ -48,13 +48,16 @@ It allows users to manage courses and study tasks, and includes a recommendation
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/api/tasks` | Get all tasks |
+| GET | `/api/tasks` | Get all tasks with pagination |
 | GET | `/api/tasks/{id}` | Get task by ID |
 | POST | `/api/tasks` | Create a new task |
 | PUT | `/api/tasks/{id}` | Update a task |
 | DELETE | `/api/tasks/{id}` | Delete a task |
-| GET | `/api/tasks/recommended` | Get recommended tasks sorted by urgency |
 | PUT | `/api/tasks/{id}/status?status=DONE` | Update task status |
+| GET | `/api/tasks/recommended` | Get recommended tasks sorted by urgency |
+| GET | `/api/tasks/due-soon?days=30` | Get open tasks due soon |
+| GET | `/api/tasks/overdue` | Get overdue open tasks |
+| GET | `/api/tasks?status=TODO&courseId=1&search=practice&sortBy=priority&direction=desc&page=0&size=10` | Get filtered, searched, sorted, and paginated tasks |
 
 ## Recommendation Algorithm
 
