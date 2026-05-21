@@ -20,7 +20,7 @@ public class TaskService {
         this.courseRepository = courseRepository;
     }
 
-    public List<TaskResponse> getTasks(TaskStatus status, Long courseId, String sortBy, String direction) {
+    public List<TaskResponse> getTasks(TaskStatus status, Long courseId, String search, String sortBy, String direction) {
         Comparator<Task> comparator = getTaskComparator(sortBy);
 
         if ("desc".equalsIgnoreCase(direction)) {
@@ -31,6 +31,7 @@ public class TaskService {
                 .stream()
                 .filter(task -> status == null || task.getStatus() == status)
                 .filter(task -> courseId == null || task.getCourse().getId().equals(courseId))
+                .filter(task -> matchesSearch(task, search))
                 .sorted(comparator)
                 .map(this::mapToTaskResponse)
                 .toList();
@@ -216,5 +217,21 @@ public class TaskService {
         int courseDifficulty = task.getCourse().getDifficulty();
 
         return task.getPriority() * task.getEstimatedHours() * courseDifficulty / daysLeft;
+    }
+
+    private boolean matchesSearch(Task task, String search) {
+        if (search == null || search.isBlank()) {
+            return true;
+        }
+
+        String normalizedSearch = search.toLowerCase();
+
+        return containsIgnoreCase(task.getTitle(), normalizedSearch)
+                || containsIgnoreCase(task.getDescription(), normalizedSearch)
+                || containsIgnoreCase(task.getCourse().getName(), normalizedSearch);
+    }
+
+    private boolean containsIgnoreCase(String value, String search) {
+        return value != null && value.toLowerCase().contains(search);
     }
 }

@@ -20,10 +20,11 @@ public class TaskController {
     public List<TaskResponse> getTasks(
             @RequestParam(required = false) TaskStatus status,
             @RequestParam(required = false) Long courseId,
+            @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "deadline") String sortBy,
             @RequestParam(defaultValue = "asc") String direction
     ) {
-        return taskService.getTasks(status, courseId, sortBy, direction);
+        return taskService.getTasks(status, courseId, search, sortBy, direction);
     }
 
     @GetMapping("/due-soon")
