@@ -1,3 +1,6 @@
+DELETE FROM tasks;
+DELETE FROM course;
+
 INSERT INTO course (id, name, semester, difficulty)
 VALUES
     (1, 'Algorithms', 'Year 2 - Semester B', 5),
@@ -10,3 +13,6 @@ VALUES
     (2, 'Read OS summary', 'Review processes and threads', '2026-06-10', 3.0, 3, 'TODO', 2),
     (3, 'Practice networking questions', 'Review TCP, UDP, ARP, and DHCP', '2026-06-15', 4.0, 4, 'IN_PROGRESS', 3),
     (4, 'Submit old assignment', 'This task is overdue for testing', '2026-05-01', 2.0, 4, 'TODO', 1);
+
+ALTER TABLE course ALTER COLUMN id RESTART WITH 4;
+ALTER TABLE tasks ALTER COLUMN id RESTART WITH 5;
