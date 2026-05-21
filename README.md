@@ -15,6 +15,7 @@ It allows users to manage courses and study tasks, and includes a recommendation
 - Task status management: TODO, IN_PROGRESS, DONE
 - Input validation for courses and tasks
 - Structured validation error responses
+- Integration tests for task API endpoints
 
 ## Tech Stack
 
@@ -201,3 +202,10 @@ Planned features:
 - User authentication
 - Docker support
 - Unit tests
+
+## Testing
+
+Run tests with:
+
+```bash
+./mvnw test
