@@ -20,14 +20,29 @@ public class TaskService {
         this.courseRepository = courseRepository;
     }
 
-    public List<TaskResponse> getTasks(TaskStatus status, Long courseId, String search, String sortBy, String direction) {
+    public TaskPageResponse getTasks(
+            TaskStatus status,
+            Long courseId,
+            String search,
+            String sortBy,
+            String direction,
+            int page,
+            int size
+    ) {
+        page = Math.max(page, 0);
+        size = Math.max(size, 1);
+
+        if (size > 50) {
+            size = 50;
+        }
+
         Comparator<Task> comparator = getTaskComparator(sortBy);
 
         if ("desc".equalsIgnoreCase(direction)) {
             comparator = comparator.reversed();
         }
 
-        return taskRepository.findAll()
+        List<TaskResponse> filteredTasks = taskRepository.findAll()
                 .stream()
                 .filter(task -> status == null || task.getStatus() == status)
                 .filter(task -> courseId == null || task.getCourse().getId().equals(courseId))
@@ -35,6 +50,27 @@ public class TaskService {
                 .sorted(comparator)
                 .map(this::mapToTaskResponse)
                 .toList();
+
+        long totalElements = filteredTasks.size();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        List<TaskResponse> content = filteredTasks.stream()
+                .skip((long) page * size)
+                .limit(size)
+                .toList();
+
+        boolean first = page == 0;
+        boolean last = totalPages == 0 || page >= totalPages - 1;
+
+        return new TaskPageResponse(
+                content,
+                page,
+                size,
+                totalElements,
+                totalPages,
+                first,
+                last
+        );
     }
 
     public TaskResponse getTaskById(Long id) {

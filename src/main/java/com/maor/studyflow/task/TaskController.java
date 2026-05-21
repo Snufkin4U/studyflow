@@ -17,14 +17,16 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponse> getTasks(
+    public TaskPageResponse getTasks(
             @RequestParam(required = false) TaskStatus status,
             @RequestParam(required = false) Long courseId,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "deadline") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        return taskService.getTasks(status, courseId, search, sortBy, direction);
+        return taskService.getTasks(status, courseId, search, sortBy, direction, page, size);
     }
 
     @GetMapping("/due-soon")
