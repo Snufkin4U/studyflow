@@ -8,6 +8,31 @@ The project is part of a full-stack portfolio application designed to help stude
 
 ---
 
+## Live API
+
+Production Backend:
+
+```text
+https://studyflow-production-1e15.up.railway.app
+```
+
+Frontend Live Demo:
+
+```text
+https://studyflow-frontend-rust.vercel.app
+```
+
+Example API endpoints:
+
+```text
+https://studyflow-production-1e15.up.railway.app/api/courses
+https://studyflow-production-1e15.up.railway.app/api/tasks
+https://studyflow-production-1e15.up.railway.app/api/dashboard/summary
+https://studyflow-production-1e15.up.railway.app/swagger-ui.html
+```
+
+---
+
 ## Project Overview
 
 StudyFlow allows students to organize their academic work in one place.
