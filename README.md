@@ -307,16 +307,28 @@ This structure makes it easier for the frontend to display clear validation mess
 
 ## Database
 
-The project uses an H2 in-memory database for local development.
+The project uses two database configurations:
+
+* H2 in-memory database for local development
+* PostgreSQL on Railway for production deployment
+
+---
+
+### Local Development Database
+
+For local development, the project uses an H2 in-memory database.
 
 The database is recreated when the application starts.
 
-Important configuration:
+Important local configuration:
 
 ```properties
-spring.jpa.hibernate.ddl-auto=create
-spring.jpa.defer-datasource-initialization=true
-spring.sql.init.mode=always
+spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:h2:mem:studyflowdb;DB_CLOSE_DELAY=-1}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME:sa}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:}
+
+spring.jpa.hibernate.ddl-auto=${SPRING_JPA_HIBERNATE_DDL_AUTO:create}
+spring.sql.init.mode=${SPRING_SQL_INIT_MODE:always}
 ```
 
 H2 Console:
@@ -342,6 +354,31 @@ Password:
 ```text
 leave empty
 ```
+
+---
+
+### Production Database
+
+In production, the backend uses PostgreSQL hosted on Railway.
+
+The application supports environment-based database configuration, so it can use:
+
+* H2 for local development
+* PostgreSQL for production deployment
+
+Production database configuration is provided through Railway environment variables:
+
+```text
+SPRING_DATASOURCE_URL
+SPRING_DATASOURCE_USERNAME
+SPRING_DATASOURCE_PASSWORD
+SPRING_JPA_HIBERNATE_DDL_AUTO=update
+SPRING_SQL_INIT_MODE=never
+SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=false
+SPRING_H2_CONSOLE_ENABLED=false
+```
+
+This allows production data to persist after backend restarts and redeployments.
 
 ---
 
