@@ -1,78 +1,222 @@
-# StudyFlow
+# StudyFlow Backend
 
 ![Java CI](https://github.com/Snufkin4U/studyflow/actions/workflows/ci.yml/badge.svg)
 
-StudyFlow is a smart academic planner backend for students.
+StudyFlow is a Spring Boot backend API for a smart academic planner system.
 
-It allows users to manage courses and study tasks, and includes a recommendation system that ranks tasks by urgency.
+The project is part of a full-stack portfolio application designed to help students manage courses, academic tasks, deadlines, priorities, study workload, and course progress.
 
-## Features
+---
 
-- Course management
-- Task management
-- H2 in-memory database
-- Spring Data JPA repositories
-- Relationship between tasks and courses
-- Smart task recommendation logic
-- Task status management: TODO, IN_PROGRESS, DONE
-- Input validation for courses and tasks
-- Structured validation error responses
-- Integration tests for task API endpoints
+## Project Overview
 
-## Tech Stack
+StudyFlow allows students to organize their academic work in one place.
 
-- Java
-- Spring Boot
-- Spring Web
-- Spring Data JPA
-- H2 Database
-- Maven
+The backend provides REST API endpoints for:
 
-## Main API Endpoints
+* Managing academic courses
+* Managing study tasks
+* Updating task status
+* Filtering, searching, sorting, and paginating tasks
+* Recommending urgent tasks
+* Tracking overdue and upcoming tasks
+* Calculating dashboard statistics
+* Calculating progress per course
+* Returning structured validation errors
+
+---
+
+## Technologies Used
+
+* Java
+* Spring Boot
+* Spring Web
+* Spring Data JPA
+* Maven
+* H2 In-Memory Database
+* Bean Validation
+* Swagger / OpenAPI
+* JUnit
+* MockMvc
+* GitHub Actions CI
+
+---
+
+## Main Features
+
+### Course Management
+
+The system supports full CRUD operations for academic courses.
+
+Each course contains:
+
+* ID
+* Name
+* Semester
+* Difficulty
+
+Supported operations:
+
+* Create course
+* Get all courses
+* Get course by ID
+* Update course
+* Delete course
+
+---
+
+### Task Management
+
+The system supports full CRUD operations for academic tasks.
+
+Each task contains:
+
+* ID
+* Title
+* Description
+* Deadline
+* Estimated hours
+* Priority
+* Status
+* Related course
+
+Supported task statuses:
+
+* `TODO`
+* `IN_PROGRESS`
+* `DONE`
+
+Supported operations:
+
+* Create task
+* Get all tasks
+* Get task by ID
+* Update task
+* Update task status
+* Delete task
+
+---
+
+### Task Filtering, Searching, Sorting and Pagination
+
+The `GET /api/tasks` endpoint supports advanced query parameters.
+
+| Parameter   | Description                     |
+| ----------- | ------------------------------- |
+| `status`    | Filter tasks by status          |
+| `courseId`  | Filter tasks by course          |
+| `search`    | Search tasks by text            |
+| `sortBy`    | Sort tasks by selected field    |
+| `direction` | Sort direction: `asc` or `desc` |
+| `page`      | Page number                     |
+| `size`      | Page size                       |
+
+Example:
+
+```http
+GET /api/tasks?status=TODO&courseId=1&search=exam&sortBy=deadline&direction=asc&page=0&size=10
+```
+
+---
+
+### Recommended Tasks
+
+The backend includes a recommendation endpoint that ranks open tasks by urgency.
+
+Endpoint:
+
+```http
+GET /api/tasks/recommended
+```
+
+The recommendation logic considers:
+
+* Task priority
+* Estimated hours
+* Course difficulty
+* Days left until deadline
+
+Tasks marked as `DONE` are excluded from recommendations.
+
+---
+
+### Due Soon and Overdue Tasks
+
+The backend provides endpoints for tracking upcoming and overdue academic work.
+
+```http
+GET /api/tasks/due-soon?days=30
+```
+
+```http
+GET /api/tasks/overdue
+```
+
+These endpoints help students focus on tasks that require immediate attention.
+
+---
 
 ### Dashboard
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/dashboard/summary` | Get overall study dashboard summary |
-| GET | `/api/dashboard/courses` | Get task progress grouped by course |
+The backend provides dashboard data for the frontend.
 
-### Courses
+Dashboard summary includes:
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/courses` | Get all courses |
-| GET | `/api/courses/{id}` | Get course by ID |
-| POST | `/api/courses` | Create a new course |
-| PUT | `/api/courses/{id}` | Update a course |
-| DELETE | `/api/courses/{id}` | Delete a course |
+* Total courses
+* Total tasks
+* Open tasks
+* Total estimated hours for open tasks
 
-### Tasks
+Course progress includes:
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/api/tasks` | Get all tasks with pagination |
-| GET | `/api/tasks/{id}` | Get task by ID |
-| POST | `/api/tasks` | Create a new task |
-| PUT | `/api/tasks/{id}` | Update a task |
-| DELETE | `/api/tasks/{id}` | Delete a task |
-| PUT | `/api/tasks/{id}/status?status=DONE` | Update task status |
-| GET | `/api/tasks/recommended` | Get recommended tasks sorted by urgency |
-| GET | `/api/tasks/due-soon?days=30` | Get open tasks due soon |
-| GET | `/api/tasks/overdue` | Get overdue open tasks |
-| GET | `/api/tasks?status=TODO&courseId=1&search=practice&sortBy=priority&direction=desc&page=0&size=10` | Get filtered, searched, sorted, and paginated tasks |
+* Course ID
+* Course name
+* Total tasks
+* Open tasks
+* Done tasks
+* Remaining estimated hours
+* Completion percentage
 
-## Recommendation Algorithm
+---
 
-The system calculates task urgency using:
+## API Endpoints
 
-```text
-urgencyScore = priority * estimatedHours * courseDifficulty / daysLeft
-```
+### Dashboard Endpoints
 
-Tasks with higher urgency scores appear first.
+| Method | Endpoint                 | Description                         |
+| ------ | ------------------------ | ----------------------------------- |
+| GET    | `/api/dashboard/summary` | Get overall dashboard summary       |
+| GET    | `/api/dashboard/courses` | Get progress data grouped by course |
 
-Tasks marked as `DONE` are excluded from recommendations.
+---
+
+### Course Endpoints
+
+| Method | Endpoint            | Description               |
+| ------ | ------------------- | ------------------------- |
+| GET    | `/api/courses`      | Get all courses           |
+| GET    | `/api/courses/{id}` | Get course by ID          |
+| POST   | `/api/courses`      | Create a new course       |
+| PUT    | `/api/courses/{id}` | Update an existing course |
+| DELETE | `/api/courses/{id}` | Delete a course           |
+
+---
+
+### Task Endpoints
+
+| Method | Endpoint                             | Description                                                 |
+| ------ | ------------------------------------ | ----------------------------------------------------------- |
+| GET    | `/api/tasks`                         | Get tasks with filtering, searching, sorting and pagination |
+| GET    | `/api/tasks/{id}`                    | Get task by ID                                              |
+| POST   | `/api/tasks`                         | Create a new task                                           |
+| PUT    | `/api/tasks/{id}`                    | Update an existing task                                     |
+| PUT    | `/api/tasks/{id}/status?status=DONE` | Update task status                                          |
+| DELETE | `/api/tasks/{id}`                    | Delete a task                                               |
+| GET    | `/api/tasks/recommended`             | Get recommended tasks sorted by urgency                     |
+| GET    | `/api/tasks/due-soon?days=30`        | Get open tasks due soon                                     |
+| GET    | `/api/tasks/overdue`                 | Get overdue open tasks                                      |
+
+---
 
 ## Example Course Request
 
@@ -83,6 +227,8 @@ Tasks marked as `DONE` are excluded from recommendations.
   "difficulty": 5
 }
 ```
+
+---
 
 ## Example Task Request
 
@@ -98,9 +244,13 @@ Tasks marked as `DONE` are excluded from recommendations.
 }
 ```
 
-## Validation Error Example
+---
 
-When invalid input is sent to the API, the server returns a structured validation response.
+## Validation
+
+The API uses Bean Validation to validate incoming requests.
+
+When invalid input is sent, the backend returns a structured validation response.
 
 Example invalid course request:
 
@@ -126,47 +276,31 @@ Example response:
 }
 ```
 
-## How to Run
+This structure makes it easier for the frontend to display clear validation messages to the user.
 
-Clone the project:
+---
 
-```bash
-git clone https://github.com/Snufkin4U/studyflow.git
+## Database
+
+The project uses an H2 in-memory database for local development.
+
+The database is recreated when the application starts.
+
+Important configuration:
+
+```properties
+spring.jpa.hibernate.ddl-auto=create
+spring.jpa.defer-datasource-initialization=true
+spring.sql.init.mode=always
 ```
 
-Enter the project folder:
-
-```bash
-cd studyflow
-```
-
-Run with Maven:
-
-```bash
-./mvnw spring-boot:run
-```
-
-On Windows:
-
-```bash
-mvnw.cmd spring-boot:run
-```
-
-The server will run at:
-
-```text
-http://localhost:8080
-```
-
-## H2 Console
-
-H2 Console is available at:
+H2 Console:
 
 ```text
 http://localhost:8080/h2-console
 ```
 
-Use the following JDBC URL:
+Example JDBC URL:
 
 ```text
 jdbc:h2:mem:studyflowdb
@@ -184,30 +318,153 @@ Password:
 leave empty
 ```
 
-## Project Status
+---
 
-Backend MVP is in progress.
+## Swagger API Documentation
 
-Completed:
+Swagger UI is available at:
 
-- Course CRUD
-- Task CRUD
-- Task recommendation algorithm
-- Input validation
-- Structured validation error responses
-- H2 database integration
+```text
+http://localhost:8080/swagger-ui.html
+```
 
-Planned features:
+Swagger can be used to test all API endpoints directly from the browser.
 
-- PostgreSQL integration
-- React frontend
-- User authentication
-- Docker support
-- Unit tests
+---
 
-## Testing
+## CORS
 
-Run tests with:
+The backend is configured to allow requests from the local Vite React frontend.
+
+Allowed local frontend origins:
+
+```text
+http://localhost:5173
+http://localhost:5174
+http://localhost:5175
+```
+
+---
+
+## Running Locally
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Snufkin4U/studyflow.git
+```
+
+Enter the project folder:
+
+```bash
+cd studyflow
+```
+
+Run the backend:
+
+```bash
+./mvnw spring-boot:run
+```
+
+On Windows PowerShell:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+The backend runs on:
+
+```text
+http://localhost:8080
+```
+
+---
+
+## Running Tests
+
+Run all tests:
 
 ```bash
 ./mvnw test
+```
+
+On Windows PowerShell:
+
+```powershell
+.\mvnw.cmd test
+```
+
+The project includes integration tests using MockMvc.
+
+---
+
+## GitHub Actions CI
+
+This repository includes a GitHub Actions workflow that runs automatically on push and pull request.
+
+The CI pipeline runs:
+
+* Maven build
+* Backend tests
+
+This helps verify that the backend remains stable after each change.
+
+---
+
+## Related Repository
+
+Frontend repository:
+
+```text
+https://github.com/Snufkin4U/studyflow-frontend
+```
+
+---
+
+## Current Project Status
+
+Completed backend features:
+
+* Course CRUD
+* Task CRUD
+* Task status update
+* Task filtering
+* Task search
+* Task sorting
+* Task pagination
+* Recommended tasks endpoint
+* Due soon tasks endpoint
+* Overdue tasks endpoint
+* Dashboard summary
+* Course progress calculation
+* Bean Validation
+* Global exception handling
+* H2 seed data
+* Swagger / OpenAPI documentation
+* Integration tests
+* GitHub Actions CI
+
+---
+
+## Future Improvements
+
+Possible future improvements:
+
+* PostgreSQL integration
+* User authentication
+* Docker support
+* Deployment to a cloud platform
+* Multi-user support
+* Advanced analytics for study workload
+
+---
+
+## Author
+
+Maor Cohen
+
+GitHub:
+
+```text
+https://github.com/Snufkin4U
+```
