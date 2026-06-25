@@ -1,5 +1,7 @@
 package com.maor.studyflow.task;
 
+import com.maor.studyflow.Category;
+import com.maor.studyflow.CategoryRepository;
 import com.maor.studyflow.course.Course;
 import com.maor.studyflow.course.CourseRepository;
 import org.springframework.stereotype.Service;
@@ -14,15 +16,20 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final CourseRepository courseRepository;
+    private final CategoryRepository categoryRepository;
 
-    public TaskService(TaskRepository taskRepository, CourseRepository courseRepository) {
+    public TaskService(TaskRepository taskRepository,
+                       CourseRepository courseRepository,
+                       CategoryRepository categoryRepository) {
         this.taskRepository = taskRepository;
         this.courseRepository = courseRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public TaskPageResponse getTasks(
             TaskStatus status,
             Long courseId,
+            Long categoryId,
             String search,
             String sortBy,
             String direction,
@@ -46,6 +53,8 @@ public class TaskService {
                 .stream()
                 .filter(task -> status == null || task.getStatus() == status)
                 .filter(task -> courseId == null || task.getCourse().getId().equals(courseId))
+                .filter(task -> categoryId == null ||
+                        (task.getCategory() != null && task.getCategory().getId().equals(categoryId)))
                 .filter(task -> matchesSearch(task, search))
                 .sorted(comparator)
                 .map(this::mapToTaskResponse)
@@ -90,6 +99,12 @@ public class TaskService {
             return null;
         }
 
+        Category category = getCategoryFromRequest(request);
+
+        if (request.getCategoryId() != null && category == null) {
+            return null;
+        }
+
         Task task = new Task();
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
@@ -98,6 +113,7 @@ public class TaskService {
         task.setPriority(request.getPriority());
         task.setStatus(request.getStatus() == null ? TaskStatus.TODO : request.getStatus());
         task.setCourse(course);
+        task.setCategory(category);
 
         Task savedTask = taskRepository.save(task);
 
@@ -117,6 +133,12 @@ public class TaskService {
             return null;
         }
 
+        Category category = getCategoryFromRequest(request);
+
+        if (request.getCategoryId() != null && category == null) {
+            return null;
+        }
+
         existingTask.setTitle(request.getTitle());
         existingTask.setDescription(request.getDescription());
         existingTask.setDeadline(request.getDeadline());
@@ -124,6 +146,7 @@ public class TaskService {
         existingTask.setPriority(request.getPriority());
         existingTask.setStatus(request.getStatus() == null ? existingTask.getStatus() : request.getStatus());
         existingTask.setCourse(course);
+        existingTask.setCategory(category);
 
         Task savedTask = taskRepository.save(existingTask);
 
@@ -207,6 +230,11 @@ public class TaskService {
 
     private TaskResponse mapToTaskResponse(Task task) {
         Course course = task.getCourse();
+        Category category = task.getCategory();
+
+        Long categoryId = category == null ? null : category.getId();
+        String categoryName = category == null ? null : category.getName();
+        String categoryColor = category == null ? null : category.getColor();
 
         return new TaskResponse(
                 task.getId(),
@@ -217,8 +245,19 @@ public class TaskService {
                 task.getPriority(),
                 task.getStatus(),
                 course.getId(),
-                course.getName()
+                course.getName(),
+                categoryId,
+                categoryName,
+                categoryColor
         );
+    }
+
+    private Category getCategoryFromRequest(CreateTaskRequest request) {
+        if (request.getCategoryId() == null) {
+            return null;
+        }
+
+        return categoryRepository.findById(request.getCategoryId()).orElse(null);
     }
 
     private Comparator<Task> getTaskComparator(String sortBy) {
@@ -264,7 +303,8 @@ public class TaskService {
 
         return containsIgnoreCase(task.getTitle(), normalizedSearch)
                 || containsIgnoreCase(task.getDescription(), normalizedSearch)
-                || containsIgnoreCase(task.getCourse().getName(), normalizedSearch);
+                || containsIgnoreCase(task.getCourse().getName(), normalizedSearch)
+                || (task.getCategory() != null && containsIgnoreCase(task.getCategory().getName(), normalizedSearch));
     }
 
     private boolean containsIgnoreCase(String value, String search) {

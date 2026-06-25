@@ -31,6 +31,8 @@ public class CreateTaskRequest {
     @NotNull(message = "Course ID is required")
     private Long courseId;
 
+    private Long categoryId;
+
     public CreateTaskRequest() {
     }
 
@@ -62,6 +64,10 @@ public class CreateTaskRequest {
         return courseId;
     }
 
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -88,5 +94,9 @@ public class CreateTaskRequest {
 
     public void setCourseId(Long courseId) {
         this.courseId = courseId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 }

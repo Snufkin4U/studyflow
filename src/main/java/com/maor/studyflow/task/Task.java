@@ -1,5 +1,6 @@
 package com.maor.studyflow.task;
 
+import com.maor.studyflow.Category;
 import com.maor.studyflow.course.Course;
 import jakarta.persistence.*;
 
@@ -25,6 +26,10 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     public Task() {
     }
@@ -73,6 +78,10 @@ public class Task {
         return course;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -103,5 +112,9 @@ public class Task {
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }
