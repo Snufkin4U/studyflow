@@ -2,9 +2,9 @@
 
 ![Java CI](https://github.com/Snufkin4U/studyflow/actions/workflows/ci.yml/badge.svg)
 
-StudyFlow is a Spring Boot backend API for a smart academic planner system.
+StudyFlow Backend is a Spring Boot REST API for a smart academic planner system.
 
-The project is part of a full-stack portfolio application designed to help students manage courses, academic tasks, deadlines, priorities, study workload, and course progress.
+The project is part of a full-stack portfolio application designed to help students manage academic courses, study tasks, deadlines, priorities, study workload, smart task insights and course progress.
 
 ---
 
@@ -22,32 +22,39 @@ Frontend Live Demo:
 https://studyflow-frontend-rust.vercel.app
 ```
 
+Swagger API Documentation:
+
+```text
+https://studyflow-production-1e15.up.railway.app/swagger-ui.html
+```
+
 Example API endpoints:
 
 ```text
 https://studyflow-production-1e15.up.railway.app/api/courses
 https://studyflow-production-1e15.up.railway.app/api/tasks
 https://studyflow-production-1e15.up.railway.app/api/dashboard/summary
-https://studyflow-production-1e15.up.railway.app/swagger-ui.html
+https://studyflow-production-1e15.up.railway.app/api/tasks/recommended
 ```
 
 ---
 
 ## Project Overview
 
-StudyFlow allows students to organize their academic work in one place.
+StudyFlow allows students to organize their academic workload in one place.
 
 The backend provides REST API endpoints for:
 
 * Managing academic courses
 * Managing study tasks
 * Updating task status
-* Filtering, searching, sorting, and paginating tasks
+* Filtering, searching, sorting and paginating tasks
 * Recommending urgent tasks
-* Tracking overdue and upcoming tasks
+* Tracking due soon and overdue tasks
 * Calculating dashboard statistics
 * Calculating progress per course
 * Returning structured validation errors
+* Supporting a deployed React frontend
 
 ---
 
@@ -58,12 +65,14 @@ The backend provides REST API endpoints for:
 * Spring Web
 * Spring Data JPA
 * Maven
-* H2 In-Memory Database
+* H2 In-Memory Database for local development
+* PostgreSQL for production
 * Bean Validation
 * Swagger / OpenAPI
 * JUnit
 * MockMvc
 * GitHub Actions CI
+* Railway deployment
 
 ---
 
@@ -169,9 +178,13 @@ Tasks marked as `DONE` are excluded from recommendations.
 
 The backend provides endpoints for tracking upcoming and overdue academic work.
 
+Due soon tasks:
+
 ```http
 GET /api/tasks/due-soon?days=30
 ```
+
+Overdue tasks:
 
 ```http
 GET /api/tasks/overdue
@@ -327,7 +340,11 @@ spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:h2:mem:studyflowdb;DB_CLOSE_D
 spring.datasource.username=${SPRING_DATASOURCE_USERNAME:sa}
 spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:}
 
+spring.h2.console.enabled=${SPRING_H2_CONSOLE_ENABLED:true}
+spring.h2.console.path=/h2-console
+
 spring.jpa.hibernate.ddl-auto=${SPRING_JPA_HIBERNATE_DDL_AUTO:create}
+spring.jpa.defer-datasource-initialization=${SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION:true}
 spring.sql.init.mode=${SPRING_SQL_INIT_MODE:always}
 ```
 
@@ -378,16 +395,22 @@ SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=false
 SPRING_H2_CONSOLE_ENABLED=false
 ```
 
-This allows production data to persist after backend restarts and redeployments.
+Production data persists after backend restarts and redeployments.
 
 ---
 
 ## Swagger API Documentation
 
-Swagger UI is available at:
+Swagger UI is available locally at:
 
 ```text
 http://localhost:8080/swagger-ui.html
+```
+
+Swagger UI is also available in production at:
+
+```text
+https://studyflow-production-1e15.up.railway.app/swagger-ui.html
 ```
 
 Swagger can be used to test all API endpoints directly from the browser.
@@ -396,14 +419,22 @@ Swagger can be used to test all API endpoints directly from the browser.
 
 ## CORS
 
-The backend is configured to allow requests from the local Vite React frontend.
+The backend is configured to allow requests from the local Vite React frontend and the deployed Vercel frontend.
 
-Allowed local frontend origins:
+Allowed frontend origins include:
 
 ```text
 http://localhost:5173
 http://localhost:5174
 http://localhost:5175
+http://localhost:5176
+https://studyflow-frontend-rust.vercel.app
+```
+
+The allowed origins can be configured with:
+
+```properties
+app.cors.allowed-origins=${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173}
 ```
 
 ---
@@ -473,12 +504,37 @@ This helps verify that the backend remains stable after each change.
 
 ---
 
+## Deployment
+
+The backend is deployed on Railway.
+
+Production backend:
+
+```text
+https://studyflow-production-1e15.up.railway.app
+```
+
+The production backend uses:
+
+* Railway application service
+* Railway PostgreSQL service
+* Environment variables for database configuration
+* PostgreSQL persistence across restarts
+
+---
+
 ## Related Repository
 
 Frontend repository:
 
 ```text
 https://github.com/Snufkin4U/studyflow-frontend
+```
+
+Frontend live demo:
+
+```text
+https://studyflow-frontend-rust.vercel.app
 ```
 
 ---
@@ -501,10 +557,13 @@ Completed backend features:
 * Course progress calculation
 * Bean Validation
 * Global exception handling
-* H2 seed data
+* H2 seed data for local development
+* PostgreSQL production database
+* Production persistence after backend restart
 * Swagger / OpenAPI documentation
 * Integration tests
 * GitHub Actions CI
+* Railway deployment
 
 ---
 
@@ -512,12 +571,14 @@ Completed backend features:
 
 Possible future improvements:
 
-* PostgreSQL integration
-* User authentication
-* Docker support
-* Deployment to a cloud platform
+* User authentication and authorization
 * Multi-user support
+* Docker support
 * Advanced analytics for study workload
+* Calendar integration
+* Task labels or categories
+* End-to-end tests
+* Custom domain
 
 ---
 
