@@ -40,6 +40,8 @@ services:
     build:
       context: ../studyflow-frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api
     container_name: studyflow-frontend
     ports:
       - "5173:80"
