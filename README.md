@@ -504,6 +504,110 @@ This helps verify that the backend remains stable after each change.
 
 ---
 
+## Running the Full Stack with Docker
+
+Docker Compose runs the complete StudyFlow system:
+
+* React frontend served by Nginx
+* Nginx reverse proxy
+* Spring Boot backend
+* PostgreSQL database
+* Persistent PostgreSQL volume
+
+### Prerequisites
+
+* Docker Desktop
+* Docker Compose
+
+The backend and frontend repositories must be cloned into the same parent directory:
+
+```text
+Projects/
+├── studyflow/
+└── studyflow-frontend/
+```
+
+Clone both repositories:
+
+```bash
+git clone https://github.com/Snufkin4U/studyflow.git
+git clone https://github.com/Snufkin4U/studyflow-frontend.git
+```
+
+Enter the backend directory:
+
+```bash
+cd studyflow
+```
+
+Create the local environment file from the provided template.
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Linux or macOS:
+
+```bash
+cp .env.example .env
+```
+
+Update `POSTGRES_PASSWORD` in `.env`, then build and start the system:
+
+```bash
+docker compose up -d --build
+```
+
+Check the running services:
+
+```bash
+docker compose ps
+```
+
+Application:
+
+```text
+http://localhost:5173
+```
+
+API through Nginx:
+
+```text
+http://localhost:5173/api/courses
+```
+
+Swagger through Nginx:
+
+```text
+http://localhost:5173/swagger-ui.html
+```
+
+View logs:
+
+```bash
+docker compose logs -f
+```
+
+Stop the system:
+
+```bash
+docker compose down
+```
+
+PostgreSQL data is stored in the `postgres_data` Docker volume and persists when containers are recreated.
+
+To also delete the local database volume:
+
+```bash
+docker compose down -v
+```
+
+Warning: the `-v` option permanently deletes the local PostgreSQL data.
+
+---
+
 ## Deployment
 
 The backend is deployed on Railway.
